@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Luminosity Based Terminal Colors Adjustment</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap"
+            rel="stylesheet"
+        />
+      <script type="module" crossorigin src="/terminal-colors-adjustment-poc/assets/index-8a72e594.js"></script>
+      <link rel="stylesheet" href="/terminal-colors-adjustment-poc/assets/index-6cc5996a.css">
+    </head>
+    <body>
+        <div id="app">
+            <div>
+                <h1>Luminosity Based Terminal Colors Adjustment</h1>
+                Proof-of-concept for
+                <a href="https://github.com/microsoft/terminal/issues/14940">
+                    https://github.com/microsoft/terminal/issues/14940
+                </a>
+                <br />
+                Ensure, that there at least x% difference in luminosity value
+                between background and foreground colors in hsl color space:
+                <div class="card">
+                    <div>
+                        Set delta l to: <br />
+                        <button id="#dl0" type="button">0%</button>
+                        <button id="#dl5" type="button">5%</button>
+                        <button id="#dl10" type="button">10%</button>
+                        <button id="#dl15" type="button">15%</button>
+                        <button id="#dl20" type="button">20%</button>
+                        <button id="#dl30" type="button">30%</button>
+                        <button id="#dl40" type="button">40%</button>
+                        <button id="#dl50" type="button">50%</button>
+                    </div>
+                    <div class="on-off-options">
+                        <label for="no-same-color">
+                            Ignore the same color case:
+                        </label>
+                        <input id="no-same-color" type="checkbox" />
+                        <br />
+                        <label for="adjust-anyway">
+                            Adjust anyway event if the delta is already bigger:
+                        </label>
+                        <input id="adjust-anyway" type="checkbox" />
+                        <br />
+                        <label for="darken-bg"> Tone down backgrounds: </label>
+                        <input id="darken-bg" type="checkbox" checked />
+                    </div>
+                </div>
+                <pre id="demo"></pre>
+            </div>
+        </div>
+        
+    </body>
+</html>
