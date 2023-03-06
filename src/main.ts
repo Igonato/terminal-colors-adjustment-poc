@@ -7,17 +7,23 @@ function adjustColors(bg: string, fg: string): [string, string] {
     let [bgh, bgs, bgl] = hexToHSL(bg);
     let [fgh, fgs, fgl] = hexToHSL(fg);
 
-    // return [`hsl(${bgh}, ${bgs}%, ${bgl}%)`, `hsl(${fgh}, ${fgs}%, ${fgl}%)`];
+    if (OPTIONS["darken-bg"]) {
+        bgl = Math.max(0, bgl - 5);
+    }
 
-    bgl = Math.max(0, bgl - 10);
+    if (OPTIONS["no-same-color"] && bg === fg) {
+        return [
+            `hsl(${bgh}, ${bgs}%, ${bgl}%)`,
+            `hsl(${bgh}, ${bgs}%, ${bgl}%)`,
+        ];
+    }
 
-    let delta = 25;
+    let { value: delta } = DELTA;
 
-    if (Math.abs(fgl - bgl) < delta) {
+    if (OPTIONS["adjust-anyway"] || Math.abs(fgl - bgl) < delta) {
         if (fgl < bgl) {
             if (bgl - delta < 0) {
                 fgl = Math.min(100, bgl + delta);
-                // fgl = 0;
             } else {
                 fgl = Math.max(0, bgl - delta);
             }
@@ -28,11 +34,36 @@ function adjustColors(bg: string, fg: string): [string, string] {
                 fgl = Math.min(100, bgl + delta);
             }
         }
-        // fgl = 0;
     }
 
     return [`hsl(${bgh}, ${bgs}%, ${bgl}%)`, `hsl(${fgh}, ${fgs}%, ${fgl}%)`];
 }
+
+// Set delta buttons
+let DELTA = { value: 25 };
+[0, 5, 10, 15, 20, 25, 30, 40].forEach((delta) =>
+    document
+        .querySelector<HTMLButtonElement>("#dl" + delta.toString())
+        ?.addEventListener("click", () => {
+            DELTA.value = delta;
+            renderDemo();
+        })
+);
+
+// Checkbox options:
+let OPTIONS: { [key: string]: boolean } = {
+    "no-same-color": false,
+    "adjust-anyway": false,
+    "darken-bg": true,
+};
+["no-same-color", "adjust-anyway", "darken-bg"].forEach((option) =>
+    document
+        .querySelector<HTMLInputElement>("#" + option)
+        ?.addEventListener("change", (e) => {
+            OPTIONS[option] = (<HTMLInputElement>e.target).checked;
+            renderDemo();
+        })
+);
 
 // Color scheme as defined in settings.json
 let colorScheme: { [key: string]: string } = {
@@ -95,11 +126,15 @@ let colorAliases = [
     // ["selectionBackground", ""],
 ];
 
-function renderDemo(): string {
-    let lines: [string?] = [];
+function renderDemo(): void {
+    let lines: string[] = [
+        "",
+        `          40m   90m   41m   91m   42m   92m   43m   93m   ` +
+            `44m   94m   45m   95m   46m   96m   47m   97m`,
+    ];
 
     colorAliases.forEach(([fg, code]) => {
-        let line: [string?] = [code];
+        let line: string[] = [code];
         colorAliases.forEach(([bg, _]) => {
             if (bg === "foreground") {
                 return;
@@ -116,14 +151,8 @@ function renderDemo(): string {
         lines.push(line.join(""));
     });
 
-    return lines.join("\n");
+    document.querySelector<HTMLDivElement>("#demo")!.innerHTML =
+        lines.join("\n") + "\n ";
 }
 
-document.querySelector<HTMLDivElement>("#demo")!.innerHTML = `
-          40m   90m   41m   91m   42m   92m   43m   93m   \
-44m   94m   45m   95m   46m   96m   47m   97m
-${renderDemo()}
-
-`;
-
-// setupCounter(document.querySelector<HTMLButtonElement>("#counter")!);
+renderDemo();
